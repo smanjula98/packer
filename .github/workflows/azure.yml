@@ -35,5 +35,5 @@ jobs:
             
         run: |
           packer plugins install github.com/hashicorp/azure
-          packer build azure.json
+          packer build -var-file vars.json azure.json
        
