@@ -5,29 +5,33 @@
     "client_secret": "{{ user `client_secret` }}",
     "tenant_id": "{{ user `tenant_id` }}",
     "subscription_id": "{{ user `subscription_id` }}",
+    "communicator": "winrm",
+    "winrm_use_ssl": true,
+    "winrm_insecure": true,
+    "winrm_timeout": "5m",
+    "winrm_username": "packer",
     "build_resource_group_name": "srinivasulu-rg",
     "managed_image_resource_group_name": "srinivasulu-rg",
-    "managed_image_name": "ubuntu-jammy-{{ user `suffix` }}",
-    "os_type": "Linux",
-    "image_publisher": "canonical",
-    "image_offer": "0001-com-ubuntu-server-jammy",
-    "image_sku": "22_04-lts",
+    "managed_image_name": "myPackerImage",
+    "os_type": "Windows",
+    "image_publisher": "MicrosoftWindowsServer",
+    "image_offer": "WindowsServer",
+    "image_sku": "2016-Datacenter",
     "azure_tags": {
         "dept": "Engineering",
         "task": "Image deployment"
     },
     "vm_size": "Standard_DS2_v2"
   }],
-  "provisioners": [{
-    "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+"provisioners": [{
+    "type": "powershell",
     "inline": [
-      "apt-get update",
-      "apt-get upgrade -y",
-      "apt-get -y install nginx",
-
-      "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"
-    ],
-    "inline_shebang": "/bin/sh -x",
-    "type": "shell"
+      "Add-WindowsFeature Web-Server",
+      "while ((Get-Service RdAgent).Status -ne 'Running') { Start-Sleep -s 5 }",
+      "while ((Get-Service WindowsAzureGuestAgent).Status -ne 'Running') { Start-Sleep -s 5 }",
+      "& $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /quiet /quit",
+      "while($true) { $imageState = Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\State | Select ImageState; if($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { Write-Output $imageState.ImageState; Start-Sleep -s 10  } else { break } }"
+    ]
   }]
 }
+    
