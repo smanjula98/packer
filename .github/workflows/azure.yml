@@ -27,6 +27,13 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
+        env:
+          ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET}}
+          ARM_CLIENT_ID: ${{ secrets.CLIENT_ID}}
+          ARM_TENANT_ID:${{ secrets.ARM_TENANT_ID}}
+          ARM_SUBSCRIPTION_ID:${{ secrets.ARM_SUBSCRIPTION_ID}}
+            
         run: |
           packer plugins install github.com/hashicorp/azure
           packer build azure.json
+       
