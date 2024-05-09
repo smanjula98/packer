@@ -12,7 +12,7 @@
     "winrm_username": "packer",
     "build_resource_group_name": "srinivasulu-rg",
     "managed_image_resource_group_name": "srinivasulu-rg",
-    "managed_image_name": "myPackerImage1",
+    "managed_image_name": "myPackerImage2",
     "os_type": "Windows",
     "image_publisher": "MicrosoftWindowsServer",
     "image_offer": "WindowsServer",
